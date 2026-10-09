@@ -1,0 +1,10 @@
+/* Only layout helpers live here. Colours, typography and spacing come from Cloudscape. */
+body {
+  margin: 0;
+}
+
+.r53-top-navigation {
+  position: sticky;
+  top: 0;
+  z-index: 1002;
+}

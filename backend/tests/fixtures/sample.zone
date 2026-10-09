@@ -1,0 +1,38 @@
+; Sample BIND zone file for import tests and the import demo.
+; Exercises $ORIGIN, $TTL, @, relative and absolute names, blank-owner continuation lines,
+; a parenthesised multi-line SOA, comments, optional class and per-record TTLs.
+$ORIGIN example.com.
+$TTL 3600
+
+@       IN  SOA ns1.example.com. hostmaster.example.com. (
+                2026100801 ; serial
+                7200       ; refresh
+                900        ; retry
+                1209600    ; expire
+                86400 )    ; minimum
+@           IN  NS    ns1.example.com.
+@           IN  NS    ns2.example.com.
+
+@               A     192.0.2.1          ; no class, default TTL
+                AAAA  2001:db8::1        ; blank owner -> example.com.
+@       300 IN  MX    10 mail            ; relative MX target
+@       300 IN  MX    20 mail2.example.com.
+@           IN  TXT   "v=spf1 include:_spf.example.com ~all"
+@           IN  TXT   "google-site-verification=abc123" "second string with spaces"
+@           IN  CAA   0 issue "amazon.com"
+
+www     IN  60  CNAME @                  ; class before TTL, @ as target
+mail        IN  A     192.0.2.25
+mail2.example.com.  IN  A  192.0.2.26    ; absolute owner
+api     1h  IN  A     192.0.2.20
+            IN  A     192.0.2.21         ; same RRset as api
+_sip._tcp   IN  SRV   10 60 5060 sip
+sip         IN  A     192.0.2.30
+*.dev       IN  A     192.0.2.40
+dev         IN  NS    ns1.dev-dns.example.net.
+10          IN  PTR   mail.example.com.
+txt-escaped IN  TXT   "say \"hi\"; not a comment"
+
+$ORIGIN shop.example.com.
+store       IN  A     198.51.100.10      ; store.shop.example.com.
+legacy      IN  HINFO "PC" "Linux"       ; unsupported type -> skipped

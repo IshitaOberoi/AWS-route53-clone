@@ -1,0 +1,36 @@
+# Runs the whole app locally: http://localhost:3000 (demo / demo1234).
+# The SQLite database lives in the named volume "route53-data", so it survives restarts.
+services:
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: sqlite:////data/route53.db
+      CORS_ORIGINS: http://localhost:3000
+      COOKIE_SECURE: "false"
+      SEED_DEMO_DATA: "true"
+    volumes:
+      - route53-data:/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  route53-data:
