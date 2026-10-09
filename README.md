@@ -4,7 +4,7 @@ A functional clone of the **Amazon Route 53 console**. You can manage hosted zon
 records with persistent storage. The frontend uses Next.js and AWS's open-source Cloudscape
 design system, the backend uses FastAPI, and data is stored in SQLite.
 
-**Live demo:** _<add the deployed URL here>_  
+**Live demo:** [AWS Route 53 Clone](https://aws-route53-clone-teal.vercel.app)
 **Demo credentials:** username `demo`, password `demo1234` (mocked authentication; never
 enter real AWS credentials)
 
@@ -483,17 +483,7 @@ curl -b cookies.txt -H 'Content-Type: application/json' \
 
 ## Deployment
 
-Step-by-step instructions are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). The hosted demo uses two services:
+The hosted demo uses two services:
 
-* **Backend:** this repo's `backend/Dockerfile` on **Railway**, with a **persistent volume
-  mounted at `/data`** (`backend/railway.json` sets the health check) and these variables: `DATABASE_URL=sqlite:////data/route53.db`,
-  `COOKIE_SECURE=true` and `CORS_ORIGINS=<frontend URL>`. On start the container runs
-  `alembic upgrade head`, then the seed (a no-op unless the database is empty), then a single
-  uvicorn worker. The health check path is `/api/health`.
-* **Frontend:** `frontend/` on **Vercel** with `BACKEND_URL=https://<backend host>`. Thanks to
-  the rewrite, the browser only ever talks to the Vercel domain.
-
-After deploying, check on the live URL that you can log in, reload and stay signed in, create
-a zone and records, reload and still see them, sign out, and get redirected to login from a
-protected page. The Playwright `@smoke` tests automate this
-(`BASE_URL=<url> npx playwright test --grep @smoke`).
+- **Backend:** [`backend/` on Railway](https://aws-route53-clone-production-f99a.up.railway.app) with a persistent volume mounted at `/data`. The health check path is `/api/health`.
+- **Frontend:** [`frontend/` on Vercel](https://aws-route53-clone-teal.vercel.app), configured with `BACKEND_URL` pointing to the Railway backend. The browser communicates through the Vercel domain.
